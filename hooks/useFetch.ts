@@ -1,15 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 type FetchState<T> = {
     data: T | null
     loading: boolean
     error: string | null
+    refetch: ()=> void
 }
 
 export function useFetch<T>(url: string): FetchState<T> {
     const [data, setData] = useState<T | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+    const [refetchIndex, setRefetchIndex] = useState(0)
 
     useEffect(() => {
         let isCancelled = false
@@ -46,7 +48,11 @@ export function useFetch<T>(url: string): FetchState<T> {
         return () => {
             isCancelled = true
         }
-    }, [url])
+    }, [url, refetchIndex])
 
-    return { data, loading, error }
+    const refetch = useCallback(() => {
+        setRefetchIndex(prev => prev + 1)
+    }, [])
+
+    return { data, loading, error, refetch }
 }
