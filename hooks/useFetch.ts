@@ -26,6 +26,10 @@ export function useFetch<T>(url: string): FetchState<T> {
                 }
 
                 const json = await response.json()
+
+                if (!isCancelled) {
+                    setData(json)
+                }
             } catch (err) {
                 if(!isCancelled) {
                     setError(err instanceof Error ? err.message : "Something went wrong")
